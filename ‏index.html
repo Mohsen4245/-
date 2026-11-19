@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجري - تسوق أونلاين | متعدد البائعين</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Cairo Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f7f7fa;
+            padding-bottom: 80px; /* مساحة لشريط التنقل السفلي */
+        }
+        /* إخفاء شريط التمرير مع الحفاظ على التمرير */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .noon-yellow { background-color: #feee00; }
+        .noon-text-yellow { color: #feee00; }
+        .noon-dark { color: #404553; }
+    </style>
+</head>
+<body class="noon-dark">
+
+    <!-- الهيدر العلوي (Header) -->
+    <header class="noon-yellow sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-3 py-2.5 flex items-center justify-between gap-3">
+            <!-- اللوجو -->
+            <div class="flex items-center gap-2">
+                <a href="#" class="text-2xl font-extrabold tracking-tight text-black flex items-center gap-1">
+                    <span class="bg-black text-[#feee00] px-2 py-0.5 rounded-md text-xl">ن</span>
+                    <span>متجري</span>
+                </a>
+                <!-- تحديد الموقع -->
+                <div class="hidden md:flex items-center gap-1 text-xs font-semibold mr-3 cursor-pointer hover:opacity-80">
+                    <i class="fa-solid fa-location-dot text-red-600"></i>
+                    <span>توصيل إلى <b>الإسكندرية</b></span>
+                    <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                </div>
+            </div>
+
+            <!-- شريط البحث -->
+            <div class="flex-1 max-w-2xl relative">
+                <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="إنت بتدور على إيه؟ (موبايلات، لابتوب، عطور...)" 
+                    class="w-full bg-white text-sm rounded-lg py-2 px-4 pl-10 focus:outline-none shadow-inner">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400"></i>
+            </div>
+
+            <!-- أزرار الهيدر (تسجيل الدخول، البائعين، السلة) -->
+            <div class="flex items-center gap-4 text-sm font-bold">
+                <button onclick="openModal('vendorModal')" class="hidden sm:flex items-center gap-1.5 bg-black text-white px-3 py-1.5 rounded-lg text-xs hover:bg-gray-800 transition">
+                    <i class="fa-solid fa-store text-[#feee00]"></i>
+                    <span>بيع معنا</span>
+                </button>
+                <button onclick="openModal('authModal')" class="hidden md:flex items-center gap-1.5 hover:opacity-75">
+                    <span id="userHeaderName">تسجيل الدخول</span>
+                    <i class="fa-regular fa-user text-lg"></i>
+                </button>
+                <button onclick="openModal('cartModal')" class="relative flex items-center gap-1.5 hover:opacity-75">
+                    <span class="hidden md:inline">عربة التسوق</span>
+                    <i class="fa-solid fa-cart-shopping text-xl"></i>
+                    <span id="cartBadge" class="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="max-w-7xl mx-auto px-2 sm:px-4 pt-3 space-y-6">
+
+        <!-- البانرات الإعلانية الرئيسية (Hero Banners) -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="md:col-span-2 relative rounded-xl overflow-hidden shadow-sm h-48 sm:h-64 bg-gradient-to-l from-yellow-400 via-amber-300 to-yellow-200 flex items-center p-6">
+                <div class="z-10 max-w-md space-y-2">
+                    <span class="bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded">عروض الجمعة الصفراء</span>
+                    <h1 class="text-2xl sm:text-4xl font-extrabold text-gray-900">خصومات تصل إلى 70%</h1>
+                    <p class="text-xs sm:text-sm font-semibold text-gray-800">على الإلكترونيات، الموبايلات، والأجهزة المنزلية مع تقسيط 0% فوائد</p>
+                    <button onclick="scrollToProducts()" class="mt-2 bg-black text-[#feee00] font-bold text-xs sm:text-sm px-5 py-2 rounded-lg shadow hover:bg-gray-800">اشتري دلوقتي</button>
+                </div>
+                <i class="fa-solid fa-bag-shopping text-9xl text-yellow-500/30 absolute left-6 bottom-2"></i>
+            </div>
+            <div class="hidden md:flex flex-col justify-between gap-3 h-64">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-xl p-4 flex-1 flex flex-col justify-center relative overflow-hidden">
+                    <span class="text-xs bg-white/20 w-fit px-2 py-0.5 rounded">بائعين موثوقين</span>
+                    <h3 class="text-lg font-bold mt-1">عروض الموبايلات</h3>
+                    <p class="text-xs text-blue-100">أقوى البراندات بأفضل سعر في مصر</p>
+                    <i class="fa-solid fa-mobile-screen-button text-6xl text-white/20 absolute left-3 bottom-2"></i>
+                </div>
+                <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-xl p-4 flex-1 flex flex-col justify-center relative overflow-hidden">
+                    <span class="text-xs bg-white/20 w-fit px-2 py-0.5 rounded">توصيل إكسبريس</span>
+                    <h3 class="text-lg font-bold mt-1">السوبر ماركت</h3>
+                    <p class="text-xs text-emerald-100">كل احتياجات بيتك لحد بابك</p>
+                    <i class="fa-solid fa-basket-shopping text-6xl text-white/20 absolute left-3 bottom-2"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- شريط الأقسام الدائري (Categories Carousel) -->
+        <section class="bg-white p-4 rounded-xl shadow-sm">
+            <h2 class="text-base sm:text-lg font-extrabold mb-3">تسوق حسب الفئة</h2>
+            <div class="flex items-center gap-4 overflow-x-auto no-scrollbar pb-2" id="categoriesContainer">
+                <!-- يتم توليد الفئات بالجافاسكريبت -->
+            </div>
+        </section>
+
+        <!-- قسم عروض ميجا (Mega Deals) -->
+        <section class="noon-yellow p-4 rounded-xl shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                    <h2 class="text-lg sm:text-2xl font-extrabold text-black">عروض ميجا 🔥</h2>
+                    <span class="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded animate-pulse">لفترة محدودة</span>
+                </div>
+                <button onclick="filterByCategory('all')" class="bg-black text-white text-xs font-bold px-3 py-1.5 rounded-lg">شوف كل العروض</button>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="bg-white p-3 rounded-lg shadow-sm cursor-pointer hover:shadow-md transition" onclick="filterByCategory('موبايلات')">
+                    <span class="bg-red-100 text-red-700 text-[10px] font-bold px-2 py-0.5 rounded">خصم حتى 25%</span>
+                    <div class="h-24 flex items-center justify-center my-2 text-4xl text-blue-600"><i class="fa-solid fa-mobile-screen"></i></div>
+                    <h3 class="font-bold text-xs sm:text-sm text-center">عروض الموبايلات</h3>
+                </div>
+                <div class="bg-white p-3 rounded-lg shadow-sm cursor-pointer hover:shadow-md transition" onclick="filterByCategory('لابتوب')">
+                    <span class="bg-red-100 text-red-700 text-[10px] font-bold px-2 py-0.5 rounded">تقسيط بدون فوائد</span>
+                    <div class="h-24 flex items-center justify-center my-2 text-4xl text-gray-800"><i class="fa-solid fa-laptop"></i></div>
+                    <h3 class="font-bold text-xs sm:text-sm text-center">لابتوب وكمبيوتر</h3>
+                </div>
+                <div class="bg-white p-3 rounded-lg shadow-sm cursor-pointer hover:shadow-md transition" onclick="filterByCategory('أجهزة منزلية')">
+                    <span class="bg-red-100 text-red-700 text-[10px] font-bold px-2 py-0.5 rounded">خصم حتى 40%</span>
+                    <div class="h-24 flex items-center justify-center my-2 text-4xl text-teal-600"><i class="fa-solid fa-blender"></i></div>
+                    <h3 class="font-bold text-xs sm:text-sm text-center">أجهزة المطبخ</h3>
+                </div>
+                <div class="bg-white p-3 rounded-lg shadow-sm cursor-pointer hover:shadow-md transition" onclick="filterByCategory('سماعات وساعات')">
+                    <span class="bg-red-100 text-red-700 text-[10px] font-bold px-2 py-0.5 rounded">الأكثر مبيعاً</span>
+                    <div class="h-24 flex items-center justify-center my-2 text-4xl text-purple-600"><i class="fa-solid fa-headphones"></i></div>
+                    <h3 class="font-bold text-xs sm:text-sm text-center">سماعات وساعات ذكية</h3>
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم المنتجات (مخصوص عشانك - متعدد البائعين) -->
+        <section id="productsSection" class="space-y-3">
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg sm:text-xl font-extrabold">مخصوص عشانك ✨</h2>
+                <span id="activeCategoryLabel" class="text-xs bg-gray-200 px-2.5 py-1 rounded-full font-bold">كل المنتجات</span>
+            </div>
+
+            <!-- شبكة المنتجات -->
+            <div id="productsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                <!-- يتم توليد المنتجات بالجافاسكريبت -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- شريط التنقل السفلي الثابت (Bottom Navigation Bar - نفس تصميم تطبيق نون) -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40 px-2 py-1.5">
+        <div class="max-w-md mx-auto flex items-center justify-around">
+            <!-- الرئيسية -->
+            <button onclick="resetHome()" class="flex flex-col items-center gap-0.5 text-black font-bold">
+                <i class="fa-solid fa-house text-lg"></i>
+                <span class="text-[10px]">الرئيسية</span>
+            </button>
+            
+            <!-- الفئات / القوائم -->
+            <button onclick="openModal('categoriesModal')" class="flex flex-col items-center gap-0.5 text-gray-500 hover:text-black">
+                <i class="fa-solid fa-table-cells-large text-lg"></i>
+                <span class="text-[10px]">الفئات</span>
+            </button>
+
+            <!-- زرار العروض المميز في المنتصف -->
+            <button onclick="filterByCategory('all')" class="flex flex-col items-center justify-center -mt-4 bg-[#feee00] border-4 border-white w-14 h-14 rounded-full shadow-md">
+                <span class="text-[10px] font-extrabold text-black leading-tight text-center">عروض<br>ميجا</span>
+            </button>
+
+            <!-- حسابي -->
+            <button onclick="openModal('authModal')" class="flex flex-col items-center gap-0.5 text-gray-500 hover:text-black">
+                <i class="fa-regular fa-user text-lg"></i>
+                <span class="text-[10px]">حسابي</span>
+            </button>
+
+            <!-- العربة -->
+            <button onclick="openModal('cartModal')" class="relative flex flex-col items-center gap-0.5 text-gray-500 hover:text-black">
+                <i class="fa-solid fa-cart-shopping text-lg"></i>
+                <span class="text-[10px]">العربة</span>
+                <span id="bottomCartBadge" class="absolute -top-1 right-1 bg-blue-600 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ==================== النوافذ المنبثقة (Modals) ==================== -->
+
+    <!-- 1. نافذة عربة التسوق (Cart Modal) -->
+    <div id="cartModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-end sm:items-center justify-center">
+        <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 max-h-[85vh] flex flex-col">
+            <div class="flex items-center justify-between border-b pb-3">
+                <h3 class="font-extrabold text-lg">عربة التسوق 🛒</h3>
+                <button onclick="closeModal('cartModal')" class="text-gray-500 hover:text-black text-xl">&times;</button>
+            </div>
+            <div id="cartItemsContainer" class="flex-1 overflow-y-auto py-4 space-y-3">
+                <p class="text-center text-gray-400 text-sm py-8">عربة التسوق فارغة حالياً</p>
+            </div>
+            <div class="border-t pt-3 space-y-3">
+                <div class="flex justify-between font-extrabold text-base">
+                    <span>الإجمالي:</span>
+                    <span id="cartTotal">0 ج.م</span>
+                </div>
+                <button onclick="checkout()" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl hover:bg-blue-700 transition">إتمام الشراء الآن</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. نافذة تسجيل الدخول والحساب (Auth Modal) -->
+    <div id="authModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-2xl p-6 space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-extrabold text-lg">أهلاً بك! سجل دخولك</h3>
+                <button onclick="closeModal('authModal')" class="text-gray-500 text-xl">&times;</button>
+            </div>
+            <form onsubmit="handleLogin(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold mb-1">الاسم بالكامل</label>
+                    <input type="text" id="loginName" required placeholder="أدخل اسمك" class="w-full border rounded-lg p-2.5 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1">البريد الإلكتروني أو رقم الموبايل</label>
+                    <input type="text" required placeholder="example@mail.com" class="w-full border rounded-lg p-2.5 text-sm">
+                </div>
+                <button type="submit" class="w-full noon-yellow text-black font-extrabold py-2.5 rounded-xl shadow-sm">تسجيل الدخول / إنشاء حساب</button>
+            </form>
+            <div class="border-t pt-3 text-center">
+                <button onclick="closeModal('authModal'); openModal('vendorModal')" class="text-xs font-bold text-blue-600 hover:underline">
+                    هل أنت تاجر؟ سجل كبائع وأضف منتجاتك الآن &larr;
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. نافذة بوابة البائعين (Multi-Vendor Portal Modal) -->
+    <div id="vendorModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b pb-2">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-store text-blue-600 text-xl"></i>
+                    <h3 class="font-extrabold text-lg">لوحة إضافة منتج (بائع)</h3>
+                </div>
+                <button onclick="closeModal('vendorModal')" class="text-gray-500 text-xl">&times;</button>
+            </div>
+            <p class="text-xs text-gray-500">أضف منتجك باسم متجرك وسيظهر فوراً في الصفحة الرئيسية للمشترين.</p>
+            <form onsubmit="addVendorProduct(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold mb-1">اسم المتجر / البائع</label>
+                    <input type="text" id="vStoreName" required placeholder="مثال: تك ستور - الإسكندرية" class="w-full border rounded-lg p-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1">اسم المنتج</label>
+                    <input type="text" id="vProdName" required placeholder="مثال: سماعة بلوتوث لاسلكية" class="w-full border rounded-lg p-2 text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-bold mb-1">السعر (ج.م)</label>
+                        <input type="number" id="vProdPrice" required placeholder="1500" class="w-full border rounded-lg p-2 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-1">السعر قبل الخصم</label>
+                        <input type="number" id="vProdOldPrice" placeholder="2000" class="w-full border rounded-lg p-2 text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1">القسم</label>
+                    <select id="vProdCategory" class="w-full border rounded-lg p-2 text-sm">
+                        <option value="موبايلات">موبايلات</option>
+                        <option value="لابتوب">لابتوب</option>
+                        <option value="أجهزة منزلية">أجهزة منزلية</option>
+                        <option value="سماعات وساعات">سماعات وساعات</option>
+                        <option value="أزياء وعطور">أزياء وعطور</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-black text-[#feee00] font-extrabold py-2.5 rounded-xl">نشر المنتج في المتجر</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. نافذة كل الفئات (Categories Modal) -->
+    <div id="categoriesModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-end sm:items-center justify-center">
+        <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 space-y-4">
+            <div class="flex items-center justify-between border-b pb-2">
+                <h3 class="font-extrabold text-lg">جميع الأقسام</h3>
+                <button onclick="closeModal('categoriesModal')" class="text-gray-500 text-xl">&times;</button>
+            </div>
+            <div id="modalCategoriesList" class="grid grid-cols-2 gap-2">
+                <!-- يتم التوليد بالجافاسكريبت -->
+            </div>
+        </div>
+    </div>
+
+    <!-- كود البرمجة التفاعلي (JavaScript) -->
+    <script>
+        // بيانات الفئات
+        const categories = [
+            { name: 'الكل', icon: 'fa-border-all', color: 'bg-yellow-100 text-yellow-700' },
+            { name: 'موبايلات', icon: 'fa-mobile-screen-button', color: 'bg-blue-100 text-blue-600' },
+            { name: 'لابتوب', icon: 'fa-laptop', color: 'bg-purple-100 text-purple-600' },
+            { name: 'أجهزة منزلية', icon: 'fa-blender', color: 'bg-emerald-100 text-emerald-600' },
+            { name: 'سماعات وساعات', icon: 'fa-headphones', color: 'bg-rose-100 text-rose-600' },
+            { name: 'أزياء وعطور', icon: 'fa-shirt', color: 'bg-amber-100 text-amber-700' }
+        ];
+
+        // بيانات المنتجات الافتراضية (متعددة البائعين)
+        let products = [
+            { id: 1, name: 'آيفون 16 برو ماكس 256 جيجابايت - تيتانيوم صحراوي', price: 68500, oldPrice: 74000, category: 'موبايلات', vendor: 'نون الرسمي', rating: 4.9, icon: 'fa-mobile-screen-button', express: true },
+            { id: 2, name: 'سامسونج جالاكسي S24 ألترا 5G - ذاكرة 512 جيجا', price: 54999, oldPrice: 61000, category: 'موبايلات', vendor: 'موبايل شوب مصر', rating: 4.8, icon: 'fa-mobile', express: true },
+            { id: 3, name: 'لابتوب آبل ماك بوك إير M2 شاشة 13.6 بوصة', price: 46500, oldPrice: 52000, category: 'لابتوب', vendor: 'آي ستور', rating: 4.9, icon: 'fa-laptop', express: true },
+            { id: 4, name: 'سماعة سوني WH-1000XM5 إلغاء الضوضاء اللاسلكية', price: 13200, oldPrice: 15500, category: 'سماعات وساعات', vendor: 'تكنو زون', rating: 4.7, icon: 'fa-headphones', express: false },
+            { id: 5, name: 'قلاية هوائية تيفال بدون زيت سعة 4.2 لتر', price: 4850, oldPrice: 6200, category: 'أجهزة منزلية', vendor: 'هوم سنتر', rating: 4.6, icon: 'fa-fire-burner', express: true },
+            { id: 6, name: 'ساعة ذكية أبل واتش سيريس 9 مقاس 45 مم', price: 18900, oldPrice: 21500, category: 'سماعات وساعات', vendor: 'نون الرسمي', rating: 4.8, icon: 'fa-clock', express: true },
+            { id: 7, name: 'ماكينة قهوة إسبريسو ديلونجي مع صانع رغوة', price: 8900, oldPrice: 10500, category: 'أجهزة منزلية', vendor: 'كوفي ماستر', rating: 4.5, icon: 'fa-mug-hot', express: false },
+            { id: 8, name: 'عطر سوفاج ديور أو دو بارفان للرجال 100 مل', price: 6400, oldPrice: 7500, category: 'أزياء وعطور', vendor: 'بيوتي ستور', rating: 4.9, icon: 'fa-spray-can-sparkles', express: true }
+        ];
+
+        let cart = [];
+        let currentCategory = 'all';
+
+        // تشغيل الدوال عند فتح الصفحة
+        window.onload = () => {
+            renderCategories();
+            renderProducts(products);
+        };
+
+        // عرض الفئات
+        function renderCategories() {
+            const container = document.getElementById('categoriesContainer');
+            const modalList = document.getElementById('modalCategoriesList');
+            container.innerHTML = '';
+            modalList.innerHTML = '';
+
+            categories.forEach(cat => {
+                const catKey = cat.name === 'الكل' ? 'all' : cat.name;
+                // شريط التمرير
+                container.innerHTML += `
+                    <div onclick="filterByCategory('${catKey}')" class="flex flex-col items-center gap-1.5 min-w-[75px] cursor-pointer group">
+                        <div class="w-14 h-14 rounded-2xl ${cat.color} flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition">
+                            <i class="fa-solid ${cat.icon}"></i>
+                        </div>
+                        <span class="text-xs font-bold text-center whitespace-nowrap">${cat.name}</span>
+                    </div>
+                `;
+                // نافذة الفئات
+                modalList.innerHTML += `
+                    <button onclick="filterByCategory('${catKey}'); closeModal('categoriesModal')" class="flex items-center gap-2 p-3 border rounded-xl hover:bg-yellow-50 text-right">
+                        <i class="fa-solid ${cat.icon} text-blue-600"></i>
+                        <span class="text-xs font-bold">${cat.name}</span>
+                    </button>
+                `;
+            });
+        }
+
+        // عرض المنتجات
+        function renderProducts(list) {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+
+            if (list.length === 0) {
+                grid.innerHTML = `<p class="col-span-full text-center text-gray-500 py-10 font-bold">لا توجد منتجات مطابقة لبحثك</p>`;
+                return;
+            }
+
+            list.forEach(prod => {
+                const discount = prod.oldPrice ? Math.round(((prod.oldPrice - prod.price) / prod.oldPrice) * 100) : 0;
+                grid.innerHTML += `
+                    <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md transition relative">
+                        ${discount > 0 ? `<span class="absolute top-2 right-2 bg-green-100 text-green-700 text-[10px] font-extrabold px-1.5 py-0.5 rounded">خصم ${discount}%</span>` : ''}
+                        
+                        <!-- صورة المنتج (أيقونة توضيحية) -->
+                        <div class="h-32 bg-gray-50 rounded-lg flex items-center justify-center my-2 text-5xl text-gray-700">
+                            <i class="fa-solid ${prod.icon}"></i>
+                        </div>
+
+                        <!-- تفاصيل المنتج -->
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between text-[10px] text-gray-500">
+                                <span class="bg-gray-100 px-1.5 py-0.5 rounded font-semibold"><i class="fa-solid fa-store text-blue-600 ml-1"></i>${prod.vendor}</span>
+                                <span class="text-amber-500 font-bold"><i class="fa-solid fa-star"></i> ${prod.rating}</span>
+                            </div>
+
+                            <h3 class="text-xs font-bold line-clamp-2 h-8 leading-4">${prod.name}</h3>
+
+                            <div class="pt-1">
+                                <div class="flex items-baseline gap-1.5">
+                                    <span class="text-base font-extrabold text-black">${prod.price.toLocaleString()}</span>
+                                    <span class="text-[10px] font-bold">ج.م</span>
+                                    ${prod.oldPrice ? `<span class="text-[10px] text-gray-400 line-through">${prod.oldPrice.toLocaleString()}</span>` : ''}
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between pt-2">
+                                ${prod.express ? `<span class="noon-yellow text-black text-[10px] font-extrabold px-2 py-0.5 rounded italic">إكسبريس</span>` : `<span class="text-[10px] text-gray-400">شحن عادي</span>`}
+                                <button onclick="addToCart(${prod.id})" class="bg-blue-600 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg hover:bg-blue-700 transition">
+                                    <i class="fa-solid fa-cart-plus"></i> أضف
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // الفلترة حسب الفئة
+        function filterByCategory(cat) {
+            currentCategory = cat;
+            document.getElementById('activeCategoryLabel').innerText = cat === 'all' ? 'كل المنتجات' : cat;
+            const filtered = cat === 'all' ? products : products.filter(p => p.category === cat);
+            renderProducts(filtered);
+            scrollToProducts();
+        }
+
+        // البحث الفوري
+        function filterProducts() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = products.filter(p => 
+                p.name.toLowerCase().includes(query) || 
+                p.vendor.toLowerCase().includes(query) ||
+                p.category.toLowerCase().includes(query)
+            );
+            renderProducts(filtered);
+        }
+
+        // إضافة للعربة
+        function addToCart(id) {
+            const item = products.find(p => p.id === id);
+            cart.push(item);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            document.getElementById('cartBadge').innerText = cart.length;
+            document.getElementById('bottomCartBadge').innerText = cart.length;
+
+            const container = document.getElementById('cartItemsContainer');
+            const totalEl = document.getElementById('cartTotal');
+
+            if (cart.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-400 text-sm py-8">عربة التسوق فارغة حالياً</p>`;
+                totalEl.innerText = '0 ج.م';
+                return;
+            }
+
+            let total = 0;
+            container.innerHTML = '';
+            cart.forEach((item, index) => {
+                total += item.price;
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-gray-50 p-2.5 rounded-xl">
+                        <div>
+                            <h4 class="text-xs font-bold">${item.name}</h4>
+                            <span class="text-[10px] text-gray-500">البائع: ${item.vendor}</span>
+                            <div class="text-xs font-extrabold text-blue-600 mt-0.5">${item.price.toLocaleString()} ج.م</div>
+                        </div>
+                        <button onclick="removeFromCart(${index})" class="text-red-500 hover:text-red-700 p-1">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            totalEl.innerText = total.toLocaleString() + ' ج.م';
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function checkout() {
+            if (cart.length === 0) return alert('العربة فارغة!');
+            alert('تم استلام طلبك بنجاح! شكراً لتسوقك معنا.');
+            cart = [];
+            updateCartUI();
+            closeModal('cartModal');
+        }
+
+        // إضافة منتج جديد من بوابة البائعين
+        function addVendorProduct(e) {
+            e.preventDefault();
+            const newProd = {
+                id: products.length + 1,
+                name: document.getElementById('vProdName').value,
+                price: Number(document.getElementById('vProdPrice').value),
+                oldPrice: Number(document.getElementById('vProdOldPrice').value) || null,
+                category: document.getElementById('vProdCategory').value,
+                vendor: document.getElementById('vStoreName').value,
+                rating: 5.0,
+                icon: 'fa-box-open',
+                express: true
+            };
+            products.unshift(newProd);
+            renderProducts(products);
+            closeModal('vendorModal');
+            e.target.reset();
+            alert('تم نشر منتجك بنجاح في الصفحة الرئيسية!');
+        }
+
+        // تسجيل الدخول
+        function handleLogin(e) {
+            e.preventDefault();
+            const name = document.getElementById('loginName').value;
+            document.getElementById('userHeaderName').innerText = 'أهلاً، ' + name;
+            closeModal('authModal');
+        }
+
+        // التحكم في النوافذ المنبثقة
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function scrollToProducts() { document.getElementById('productsSection').scrollIntoView({ behavior: 'smooth' }); }
+        function resetHome() {
+            filterByCategory('all');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
